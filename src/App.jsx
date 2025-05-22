@@ -43,6 +43,16 @@ function App() {
     priceRange: "$$",
     rating: 4.5,
     image: "https://images.unsplash.com/photo-1653084019129-1f2303bb5bc0?q=80&w=2071&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+  },
+        {
+    id: 5,
+    name: "Hotdog The Bests",
+    description: "Los mejores hotdogs gourmet",
+    category: "Americana",
+    address: "Via de prueba Calle 1",
+    priceRange: "$$",
+    rating: 4.0,
+    image: "https://media.istockphoto.com/id/1776524424/photo/street-food-hot-dog-brunch.jpg?s=1024x1024&w=is&k=20&c=FTI9j5yDQo_VOi3TGBYgxumetMK0O4K_hE5whX4JM7M="
   }
   ]);
 
