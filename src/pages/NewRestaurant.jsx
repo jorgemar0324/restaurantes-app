@@ -22,11 +22,22 @@ const NewRestaurant = ({ onAddRestaurant }) => {
     });
   };
 
-  const handleSubmit = (e) => {
+ /* const handleSubmit = (e) => {
     e.preventDefault();
     onAddRestaurant(formData);
     navigate('/');
-  };
+  };*/
+
+  const handleSubmit = async (e) => {
+  e.preventDefault();
+  try {
+    await onAddRestaurant(formData);
+    navigate('/');
+  } catch (error) {
+    console.error("Error adding restaurant: ", error);
+    alert("Hubo un error al agregar el restaurante");
+  }
+};
 
   return (
     <div className="new-restaurant-container">

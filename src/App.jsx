@@ -1,74 +1,51 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import './App.css'
 import Navbar from './components/Navbar'
 import Home from './pages/Home'
 import NewRestaurant from './pages/NewRestaurant'
+import { getRestaurants, addRestaurant as addRestaurantToDB } from './services/firebaseRestaurant'
 
 function App() {
-  const [restaurants, setRestaurants] = useState([
-    {
-      id: 1,
-      name: "La Trattoria",
-      description: "Auténtica cocina italiana con pasta fresca y pizzas al horno de leña.",
-      category: "Italiana",
-      priceRange: "$$",
-      rating: 4.5,
-      image: "https://images.unsplash.com/photo-1516100882582-96c3a05fe590"
-    },
-    {
-      id: 2,
-      name: "Sushi Palace",
-      description: "Sushi fresco preparado por chefs japoneses con ingredientes importados.",
-      category: "Japonesa",
-      priceRange: "$$$",
-      rating: 4.8,
-      image: "https://images.unsplash.com/photo-1579871494447-9811cf80d66c"
-    },
-    {
-      id: 3,
-      name: "Burger House",
-      description: "Hamburguesas artesanales con carne 100% Angus.",
-      category: "Americana",
-      priceRange: "$",
-      rating: 4.2,
-      image: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd"
-    },
-      {
-    id: 4,
-    name: "Chilacas",
-    description: "Los mejores burritos y tacos al mejor precio",
-    category: "Mexicana",
-    address: "Avenida 80 Calle 67",
-    priceRange: "$$",
-    rating: 4.5,
-    image: "https://images.unsplash.com/photo-1653084019129-1f2303bb5bc0?q=80&w=2071&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-  },
-        {
-    id: 5,
-    name: "Hotdog The Bests",
-    description: "Los mejores hotdogs gourmet",
-    category: "Americana",
-    address: "Via de prueba Calle 1",
-    priceRange: "$$",
-    rating: 4.0,
-    image: "https://media.istockphoto.com/id/1776524424/photo/street-food-hot-dog-brunch.jpg?s=1024x1024&w=is&k=20&c=FTI9j5yDQo_VOi3TGBYgxumetMK0O4K_hE5whX4JM7M="
+  const [restaurants, setRestaurants] = useState([])
+  const [favorites, setFavorites] = useState([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    const fetchRestaurants = async () => {
+      try {
+        const data = await getRestaurants()
+        setRestaurants(data)
+        setLoading(false)
+      } catch (error) {
+        console.error("Error loading restaurants: ", error)
+        setLoading(false)
+      }
+    }
+
+    fetchRestaurants()
+  }, [])
+
+  const handleAddRestaurant = async (newRestaurant) => {
+    try {
+      const addedRestaurant = await addRestaurantToDB(newRestaurant)
+      setRestaurants([...restaurants, addedRestaurant])
+    } catch (error) {
+      console.error("Error adding restaurant: ", error)
+    }
   }
-  ]);
-
-  const [favorites, setFavorites] = useState([]);
-
-  const addRestaurant = (newRestaurant) => {
-    setRestaurants([...restaurants, { ...newRestaurant, id: restaurants.length + 1 }]);
-  };
 
   const toggleFavorite = (restaurantId) => {
-    if (favorites.includes(restaurantId)) {
-      setFavorites(favorites.filter(id => id !== restaurantId));
-    } else {
-      setFavorites([...favorites, restaurantId]);
-    }
-  };
+    setFavorites(prev => 
+      prev.includes(restaurantId)
+        ? prev.filter(id => id !== restaurantId)
+        : [...prev, restaurantId]
+    )
+  }
+
+  if (loading) {
+    return <div className="loading">Cargando restaurantes...</div>
+  }
 
   return (
     <Router>
@@ -78,12 +55,12 @@ function App() {
           <Home 
             restaurants={restaurants} 
             favorites={favorites}
-            onToggleFavorites={toggleFavorite}
+            onToggleFavorite={toggleFavorite}
           />} 
         />
         <Route path="/new" element={
           <NewRestaurant 
-            onAddRestaurant={addRestaurant}
+            onAddRestaurant={handleAddRestaurant}
           />} 
         />
       </Routes>
